@@ -24,3 +24,4 @@ Notes:
 
 Figma Link(for set 1): https://www.figma.com/design/eDx0s8hl4maz7gBTOMwsNt/SNAP-MAP-Screen-Design-01?node-id=0-1&t=ilWBmZzyQi0nGLfg-1
 Figma Link(for set 2): https://www.figma.com/design/64UMhoXBkNDJRazNbbVAhE/SNAP-MAP-SET2?node-id=0-1&t=plPMeenhjIZDLmBJ-1
+Figma Link(for set 3): https://www.figma.com/design/Alpl59if1VPBK8PJ50NDd3/SNAP-MAP-SET3?node-id=0-1&t=oXYiMdkvFrijYw6j-1
