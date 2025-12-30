@@ -1,26 +1,13 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { ClerkProvider } from "@clerk/clerk-expo";
 import Navigation from "./navigation/Navigation";
 
-// export default function App() {
-//   return (
-//    <View style={styles.root}>
-//      <Text>Hello Contributors!
-//      </Text>
-//    </View>
-//   );
-// }
+const CLERK_PUBLISHABLE_KEY = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 export default function App() {
-  return <Navigation />;
+  return (
+    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
+      <Navigation />
+    </ClerkProvider>
+  );
 }
-
-const styles = StyleSheet.create({
-  root: {
-    textAlign: 'center',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    flex: 1,
-  },
-});
