@@ -1,0 +1,10 @@
+1. Map screen becomes slow when many photo markers load together due to lack of clustering and lazy loading.
+2. App has no offline handling or network error feedback, causing silent failures during uploads.
+3. Photo upload allows missing metadata (caption/tags), reducing event and content quality.
+4. Upload progress UI is minimal and does not show percentage or retry options.
+5. Gallery screens load all images at once, leading to performance issues (no pagination).
+6. Backend APIs lack rate limiting, making the system vulnerable to spam uploads.
+7. API responses are inconsistent across endpoints, complicating frontend handling.
+8. No centralized error logging or monitoring is implemented on the backend.
+9. Map location accuracy is not validated, causing incorrect photo placement.
+10. Missing core features like photo filtering, likes/comments, and search reduce user engagement; these can be added via new routes, models, and UI screens.
