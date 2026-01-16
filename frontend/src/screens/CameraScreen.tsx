@@ -3,13 +3,7 @@ import * as Location from "expo-location";
 import * as ImagePicker from "expo-image-picker";
 import type { CameraType, FlashMode } from "expo-camera";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Alert,
-  Button,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Alert, Button, Text, TouchableOpacity, View } from "react-native";
 import type { ScreenProps } from "../types";
 import CameraStyle from "../styles/CameraStyle";
 
@@ -29,7 +23,7 @@ const styles = CameraStyle;
 export default function CameraScreen({
   navigation,
 }: ScreenProps<"CameraScreen">) {
-  const cameraRef = useRef(null);
+  const cameraRef = useRef<any>(null);
   const [facing, setFacing] = useState<CameraType>("back");
   const [flash, setFlash] = useState<FlashMode>("off");
   const [permission, requestPermission] = useCameraPermissions();
@@ -123,17 +117,19 @@ export default function CameraScreen({
 
   const handleGalleryPick = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
     if (status !== "granted") {
       Alert.alert("Permission needed", "Gallery access is required.");
       return;
     }
-  
+
+    // Launch image picker
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: false, // ✅ edit later, not here
+      mediaTypes: ImagePicker.MediaTypeOptions.Images as any,
+      allowsEditing: false,
       quality: 1,
-      exif: true,
-      selectionLimit: 1,
+      allowsMultipleSelection: true,
+      selectionLimit: 5,
     });
   
     if (result.canceled) return;
@@ -143,71 +139,75 @@ export default function CameraScreen({
     if (permissionStatus === "granted") {
       location = await Location.getCurrentPositionAsync({});
     }
-  
-    const asset = result.assets[0];
-  
+
+    // Navigate to confirmation screen with gallery photo
     navigation.navigate("UploadConfirmationScreen", {
-      photo: {
+      photo:
+        result.assets.length === 1
+          ? ({
+              uri: result.assets[0].uri,
+              width: result.assets[0].width,
+              height: result.assets[0].height,
+            } as any)
+          : undefined,
+      photos: result.assets.map((asset) => ({
         uri: asset.uri,
-        width: asset.width!,
-        height: asset.height!,
-        format: "jpg",
-        exif: asset.exif, // ✅ full EXIF if present
-      },
+        width: asset.width,
+        height: asset.height,
+        name: asset.fileName || "photo.jpg",
+        type: asset.mimeType || "image/jpeg",
+      })),
       location,
     });
   };
   
 
   return (
-  <View style={styles.container}>
-    <CameraView
-      ref={cameraRef}
-      style={styles.camera}
-      facing={facing}
-      flash={flash}
-      zoom={0}
-      onCameraReady={() => setIsCameraOk(true)}
-    />
+    <View style={styles.container}>
+      <CameraView
+        ref={cameraRef}
+        style={styles.camera}
+        facing={facing}
+        flash={flash}
+        onCameraReady={() => setIsCameraOk(true)}
+      />
 
-    {/* Top controls */}
-    <View style={styles.topControls}>
-      <TouchableOpacity onPress={toggleFlash} style={styles.topButton}>
-        <Text style={styles.topButtonText}>
-          ⚡ {flash === "on" ? "On" : "Off"}
-        </Text>
-      </TouchableOpacity>
+      {/* Top controls */}
+      <View style={styles.topControls}>
+        <TouchableOpacity onPress={toggleFlash} style={styles.topButton}>
+          <Text style={styles.topButtonText}>
+            ⚡ {flash === "on" ? "On" : "Off"}
+          </Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity onPress={toggleCameraFacing} style={styles.topButton}>
-        <Text style={styles.topButtonText}>🔄</Text>
-      </TouchableOpacity>
+        <TouchableOpacity onPress={toggleCameraFacing} style={styles.topButton}>
+          <Text style={styles.topButtonText}>🔄</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Bottom pill controls */}
+      <View style={styles.bottomPill}>
+        {/* Gallery preview */}
+        <TouchableOpacity onPress={handleGalleryPick}>
+          <View style={styles.galleryPreview}>
+            <Text style={styles.previewText}>🖼️</Text>
+          </View>
+        </TouchableOpacity>
+
+        {/* Capture button */}
+        <TouchableOpacity onPress={handletheCapture}>
+          <View style={styles.captureButton}>
+            <Text style={styles.captureIcon}>📷</Text>
+          </View>
+        </TouchableOpacity>
+
+        {/* Settings */}
+        <TouchableOpacity onPress={() => navigation.navigate("SettingsScreen")}>
+          <View style={styles.settingsButton}>
+            <Text style={styles.settingsIcon}>⚙️</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
     </View>
-
-    {/* Bottom pill controls */}
-    <View style={styles.bottomPill}>
-      {/* Gallery preview */}
-      <TouchableOpacity onPress={handleGalleryPick}>
-        <View style={styles.galleryPreview}>
-          <Text style={styles.previewText}>🖼️</Text>
-        </View>
-      </TouchableOpacity>
-
-      {/* Capture button */}
-      <TouchableOpacity onPress={handletheCapture}>
-        <View style={styles.captureButton}>
-          <Text style={styles.captureIcon}>📷</Text>
-        </View>
-      </TouchableOpacity>
-
-      {/* Settings */}
-      <TouchableOpacity onPress={() => navigation.navigate("SettingsScreen")}>
-        <View style={styles.settingsButton}>
-          <Text style={styles.settingsIcon}>⚙️</Text>
-        </View>
-      </TouchableOpacity>
-    </View>
-
-  </View>
-);
-
+  );
 }
