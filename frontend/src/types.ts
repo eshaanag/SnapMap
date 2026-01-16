@@ -43,6 +43,9 @@ export type RootParamList = {
   SettingsScreen: undefined;
   ErrorScreen: undefined;
   RegisterUserScreen: undefined;
+  CropScreen: 
+    | { photo?: CameraCapturedPicture; location?: LocationObject | null }
+    | undefined;
 };
 
 export type ScreenProps<T extends keyof RootParamList> = {

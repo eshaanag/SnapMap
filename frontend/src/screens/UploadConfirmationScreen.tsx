@@ -24,7 +24,8 @@ const UploadConfirmationScreen = ({
   navigation,
   route,
 }: ScreenProps<"UploadConfirmationScreen">) => {
-  const { photo, photos, location } = route.params || {};
+  const { photo: initialPhoto, photos, location } = route.params || {};
+  const [photo, setPhoto] = useState(initialPhoto);
   const { getToken } = useAuth();
   const [isUploading, setIsUploading] = useState(false);
   const [caption, setCaption] = useState('');
@@ -37,6 +38,7 @@ const UploadConfirmationScreen = ({
     navigation.goBack();
     return null;
   }
+
 
   const handleUpload = async () => {
     if (!location?.coords) {
@@ -144,6 +146,25 @@ const UploadConfirmationScreen = ({
               >
                 <Image source={{ uri: p.uri }} style={styles.previewImage} />
 
+        <View style={styles.locationBadge}>
+          <Text style={styles.locationText}>📍 Main Court</Text>
+        </View>
+
+        <View style={styles.imageActions}>
+  <TouchableOpacity
+    style={styles.retakeIcon}
+    onPress={() => navigation.navigate("CameraScreen")}
+  >
+    <Text style={styles.retakeText}>⟳</Text>
+  </TouchableOpacity>
+
+  <TouchableOpacity
+    style={styles.editIcon}
+    onPress={() => navigation.goBack()}
+  >
+    <Text style={styles.editText}>✏️</Text>
+  </TouchableOpacity>
+</View>
                 <View style={styles.locationBadge}>
                   <Text style={styles.locationText}>
                     📍{" "}
@@ -186,7 +207,7 @@ const UploadConfirmationScreen = ({
       </TouchableOpacity>
 
       {/* Cancel */}
-      <TouchableOpacity onPress={() => navigation.goBack()}>
+      <TouchableOpacity onPress={() => navigation.navigate("HomeScreen")}>
         <Text style={styles.cancelText}>Cancel</Text>
       </TouchableOpacity>
     </View>

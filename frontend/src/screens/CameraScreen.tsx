@@ -7,6 +7,18 @@ import { Alert, Button, Text, TouchableOpacity, View } from "react-native";
 import type { ScreenProps } from "../types";
 import CameraStyle from "../styles/CameraStyle";
 
+
+const exifToDecimal = (
+  dms: number[],
+  ref: "N" | "S" | "E" | "W"
+) => {
+  const [d, m, s] = dms;
+  let dec = d + m / 60 + s / 3600;
+  if (ref === "S" || ref === "W") dec *= -1;
+  return dec;
+};
+
+
 const styles = CameraStyle;
 export default function CameraScreen({
   navigation,
@@ -74,47 +86,44 @@ export default function CameraScreen({
   };
 
   const handletheCapture = async () => {
-    if (!cameraRef.current || !isCameraOk) {
-      return;
-    }
-
-    const photo = await cameraRef.current.takePictureAsync();
+    if (!cameraRef.current || !isCameraOk) return;
+  
+    // ✅ Capture image WITH exif (still not GPS-reliable)
+    const photo = await cameraRef.current.takePictureAsync({
+      quality: 1,
+      exif: true,
+    });
+  
+    // ✅ Location handled separately (correct)
     let location = null;
     const permissionStatus = await ensureLocationPermission();
-
     if (permissionStatus === "granted") {
-      const servicesEnabled = await Location.hasServicesEnabledAsync();
-      if (!servicesEnabled) {
-        Alert.alert(
-          "Location off",
-          "Enable location services to add location data."
-        );
-      } else {
-        try {
-          location = await Location.getCurrentPositionAsync({});
-        } catch (error) {
-          Alert.alert("Location error", "Unable to fetch your location.");
-        }
-      }
+      location = await Location.getCurrentPositionAsync({});
     }
-
-    navigation.navigate("UploadConfirmationScreen", {
-      photo,
+  
+    // ✅ Go DIRECTLY to confirmation screen
+    navigation.navigate("CropScreen", {
+      photo: {
+        uri: photo.uri,
+        width: photo.width,
+        height: photo.height,
+        format: "jpg",
+        exif: photo.exif, // ⚠️ partial EXIF (expected)
+      },
       location,
     });
   };
+  
 
   const handleGalleryPick = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
+    
     if (status !== "granted") {
-      Alert.alert(
-        "Permission needed",
-        "We need gallery access to select photos."
-      );
+      Alert.alert("Permission needed", "Gallery access is required.");
       return;
     }
 
+    // Launch image picker
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images as any,
       allowsEditing: false,
@@ -122,30 +131,16 @@ export default function CameraScreen({
       allowsMultipleSelection: true,
       selectionLimit: 5,
     });
-
-    if (result.canceled) {
-      return;
-    }
-
+  
+    if (result.canceled) return;
+  
     let location = null;
     const permissionStatus = await ensureLocationPermission();
-
     if (permissionStatus === "granted") {
-      const servicesEnabled = await Location.hasServicesEnabledAsync();
-      if (!servicesEnabled) {
-        Alert.alert(
-          "Location off",
-          "Enable location services to add location data."
-        );
-      } else {
-        try {
-          location = await Location.getCurrentPositionAsync({});
-        } catch (error) {
-          Alert.alert("Location error", "Unable to fetch your location.");
-        }
-      }
+      location = await Location.getCurrentPositionAsync({});
     }
 
+    // Navigate to confirmation screen with gallery photo
     navigation.navigate("UploadConfirmationScreen", {
       photo:
         result.assets.length === 1
@@ -165,6 +160,7 @@ export default function CameraScreen({
       location,
     });
   };
+  
 
   return (
     <View style={styles.container}>

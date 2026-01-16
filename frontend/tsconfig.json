@@ -3,11 +3,15 @@
   "compilerOptions": {
     "strict": false,
     "skipLibCheck": true,
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "jsx": "react-native"
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     "env.d.ts",
   ],
+  "exclude": [
+    "node_modules"
+  ]
 }

@@ -51,20 +51,41 @@ export default StyleSheet.create({
     fontSize: 12,
   },
 
-  retakeIcon: {
+  imageActions: {
     position: "absolute",
     top: 12,
     right: 12,
-    backgroundColor: "#fff",
+    flexDirection: "row",
+    gap: 12,
+  },
+
+  editIcon: {
     width: 36,
     height: 36,
     borderRadius: 18,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  editText: {
+    fontSize: 16,
+    color: "#fff",
+  },
+
+
+  retakeIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
     alignItems: "center",
     justifyContent: "center",
   },
 
   retakeText: {
     fontSize: 18,
+    color: "#fff",
   },
 
   captionBox: {
