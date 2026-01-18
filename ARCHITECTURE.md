@@ -4,6 +4,8 @@
 SnapMap uses an event-driven, Kafka-based architecture to enable autonomous and scalable photo event clustering without impacting upload performance. Instead of running heavy periodic database scans, photo uploads emit lightweight events that are asynchronously processed by background workers.
 This design ensures near real-time clustering, horizontal scalability, and fault tolerance, while keeping image uploads fast and reliable.
 
+Link to Diagram: https://www.figma.com/board/xcGptWOUyXcthJJDvmJpJo/Untitled?node-id=3-116&t=jS9LizutOMbxmA81-1
+
 ### Why Kafka (and not direct processing)
 
 Upload APIs must stay fast and non-blocking
