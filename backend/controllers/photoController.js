@@ -104,6 +104,37 @@ export const getAllPhotos = async (req, res) => {
   }
 };
 
+// api/v1/photos/get-user-photos/:clerkId
+export const getUserPhotos = async (req, res) => {
+  const clerkId = req.params.clerkId;
+
+  console.log(`GET user-photos - ClerkId: ${clerkId}`)
+
+  if (!clerkId) {
+    return res.status(400).json({ message: "Invalid clerkId" });
+  }
+
+  try {
+    console.log("📍 Fetching User Photos");
+
+    // Fetch user photos from the database
+    const photos = await Photo.find({ clerkUserId: clerkId })
+      .sort({ timestamp: -1 }) // Sort by newest first
+      .lean(); // Convert to plain JavaScript objects for better performance
+
+    console.log(`✅ Found ${photos.length} photos`);
+
+    // Return photos in the required format
+    return res.status(200).json(photos);
+    
+  } catch (error) {
+    console.error("Error fetching user photos:", error);
+    return res.status(500).json({
+      message: "Internal server error: " + error.message,
+    });
+  }
+}
+
 export const getNearbyPhotos = async (req, res) => {
   try {
     const { lat, lon, radius } = req.query || {};
