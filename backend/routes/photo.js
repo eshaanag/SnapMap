@@ -11,7 +11,6 @@ import {
 } from "../controllers/photoController.js";
 
 
-
 const router = express.Router();
 router.get("/ping", (req, res) => {
   res.json({ pong: true });
@@ -53,7 +52,7 @@ router.get("/all-photos", getAllPhotos);
 router.get("/nearby", getNearbyPhotos);
 router.get("/get-user-photos", authMiddleware, getUserPhotos);
 
-
+router.get("/get-user-photos/:clerkId", getUserPhotos);
 
 
 export default router
