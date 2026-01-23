@@ -318,6 +318,10 @@ const ProfileScreen = ({ navigation }: ScreenProps<"ProfileScreen">) => {
     navigation.navigate("SettingsScreen");
   };
 
+  const handleViewAllUploads = () => {
+    navigation.navigate("MyUploadsScreen");
+  };
+
   // ✅ Safety guard added
   if (isLoading || !profile) {
     return (
@@ -415,14 +419,28 @@ const ProfileScreen = ({ navigation }: ScreenProps<"ProfileScreen">) => {
 
         {/* Gallery Grid */}
         <View style={styles.galleryContainer}>
+          <View style={styles.galleryHeader}>
+            <Text style={styles.galleryTitle}>Recent uploads</Text>
+            {galleryImages.length > 0 && (
+              <TouchableOpacity
+                style={styles.viewAllButton}
+                onPress={handleViewAllUploads}
+              >
+                <Text style={styles.viewAllText}>View All</Text>
+                <Ionicons name="chevron-forward" size={16} color="#FF6B8A" />
+              </TouchableOpacity>
+            )}
+          </View>
+
           <View style={styles.galleryGrid}>
             {isGalleryLoading ? (
               <ActivityIndicator size="large" color="#FF6B8A" />
-            ) : (
-              galleryImages.map((imageUrl, index) => (
+            ) : galleryImages.slice(0, 6).length ? (
+              galleryImages.slice(0, 6).map((imageUrl, index) => (
                 <TouchableOpacity
                   key={index}
                   style={styles.galleryImageContainer}
+                  onPress={handleViewAllUploads}
                 >
                   <Image
                     source={{ uri: imageUrl }}
@@ -431,6 +449,10 @@ const ProfileScreen = ({ navigation }: ScreenProps<"ProfileScreen">) => {
                   />
                 </TouchableOpacity>
               ))
+            ) : (
+              <Text style={styles.emptyGalleryText}>
+                No uploads yet. Start capturing memories!
+              </Text>
             )}
           </View>
         </View>
